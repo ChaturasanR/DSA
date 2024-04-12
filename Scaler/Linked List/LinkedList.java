@@ -66,7 +66,13 @@ public class LinkedList {
             return;
         }
 
+        if (k == 0) {
+            this.head = head.getNext();
+            this.size--;
+        }
+
         LinkedListNode temp = this.head;
+
         while (temp.getNext() != null && k > 1) {
             temp = temp.getNext();
             k--;
