@@ -147,6 +147,21 @@ public class TreeTraversals {
         preOrderUtil(root.right, preOrderTraversalVals);
     }
 
+    public int[] preOrderIterative(TreeNode root) {
+        List<Integer> preOrderTraversalVals = new ArrayList<>();
+        Stack<TreeNode> st = new Stack<>();
+        st.push(root);
+        while (!st.isEmpty()) {
+            TreeNode curr = st.pop();
+            preOrderTraversalVals.add(curr.val);
+            if (curr.right != null)
+                st.push(curr.right);
+            if (curr.left != null)
+                st.push(curr.left);
+        }
+        return preOrderTraversalVals.stream().mapToInt(Integer::intValue).toArray();
+    }
+
     // Traverse left subtree
     // Traverse right subtree
     // visit the node
@@ -171,5 +186,99 @@ public class TreeTraversals {
 
         // visit node
         postOrderTraversalVals.add(root.val);
+    }
+
+    // TODO: Add logic for post order iterative
+    public int[] postOrderIterative(TreeNode root) {
+        return new int[] {};
+    }
+
+    /**
+     * Problem Description
+     * Given a binary tree, return the values of its boundary in anti-clockwise
+     * direction starting from the root. Boundary includes left boundary, leaves,
+     * and right boundary in order without duplicate nodes.
+     * 
+     * Left boundary is defined as the path from the root to the left-most node.
+     * Right boundary is defined as the path from the root to the right-most node.
+     * 
+     * If the root doesn't have left subtree or right subtree, then the root itself
+     * is left boundary or right boundary. Note this definition only applies to the
+     * input binary tree, and not applies to any subtrees.
+     * 
+     * The left-most node is defined as a leaf node you could reach when you always
+     * firstly travel to the left subtree if exists. If not, travel to the right
+     * subtree. Repeat until you reach a leaf node.
+     * 
+     * The right-most node is also defined by the same way with left and right
+     * exchanged.
+     * 
+     * Return an array of integers denoting the boundary values of tree in
+     * anti-clockwise order.
+     * 
+     * Solution
+     * 1. First visit left view nodes except for the last level
+     * 2. Then visit leaf nodes
+     * 3. Then visit right nodes from bottom to up except the last level
+     * 
+     * T.C: O(N + H + H) = O (N), S.C: O(H)
+     */
+    public int[] boundaryTraversal(TreeNode root) {
+        if (root == null)
+            return new int[] {};
+
+        List<Integer> boundaryVals = new ArrayList<>();
+        boundaryVals.add(root.val);
+        leftBoundaryTraversal(root.left, boundaryVals);
+        traverseLeaves(root, boundaryVals);
+        rightBoundaryTraversal(root.right, boundaryVals);
+        return boundaryVals.stream().mapToInt(Integer::intValue).toArray();
+    }
+
+    private void rightBoundaryTraversal(TreeNode root, List<Integer> boundaryVals) {
+        if (root == null)
+            return;
+
+        // skipping the leaf nodes
+        if (root.left == null && root.right == null)
+            return;
+
+        // Traverse towards the right subtree if not go to left
+        if (root.right != null)
+            rightBoundaryTraversal(root.right, boundaryVals);
+        else if (root.left != null)
+            rightBoundaryTraversal(root.left, boundaryVals);
+
+        boundaryVals.add(root.val);
+    }
+
+    private void traverseLeaves(TreeNode root, List<Integer> boundaryVals) {
+        if (root == null)
+            return;
+
+        // traverse the leaf nodes
+        if (root.left == null && root.right == null) {
+            boundaryVals.add(root.val);
+        }
+
+        traverseLeaves(root.left, boundaryVals);
+        traverseLeaves(root.right, boundaryVals);
+    }
+
+    private void leftBoundaryTraversal(TreeNode root, List<Integer> boundaryVals) {
+        if (root == null)
+            return;
+
+        // skipping the leaf nodes
+        if (root.left == null && root.right == null)
+            return;
+
+        boundaryVals.add(root.val);
+
+        // Traverse towards the left subtree if not go to right
+        if (root.left != null)
+            leftBoundaryTraversal(root.left, boundaryVals);
+        else if (root.right != null)
+            leftBoundaryTraversal(root.right, boundaryVals);
     }
 }
